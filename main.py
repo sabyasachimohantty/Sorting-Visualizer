@@ -1,5 +1,9 @@
 import pygame
 import random
+import quicksort
+import mergesort
+import insertionsort
+import bubblesort
 
 pygame.init()
 
@@ -8,6 +12,7 @@ SCREEN_HEIGHT = 600
 
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 heights = [(i + 1) * 10 for i in range(SCREEN_WIDTH // 10)]
+
 data = []
 pos = 0
 for i in range(SCREEN_WIDTH // 10):
@@ -32,38 +37,60 @@ def randomize_data():
         data[i] = player
         pos += 10
 
-def bubble_sort(arr):
-    n = len(arr)
-    global animate
-    for i in range(n-1):
-        for j in range(n-i-1):
-            if arr[j] > arr[j+1]:
-                arr[j], arr[j+1] = arr[j+1], arr[j]
-                data = convert_to_data(arr.copy())
-                animate.append(data.copy())
-    return animate
-
-run = True
 animate = []
 len_animate = 0
 frame = -1
 last_update = pygame.time.get_ticks()
-animation_cooldown = 25
+animation_cooldown = 100
+
+# app loop
+run = True
 while run:
 
     screen.fill((0, 0, 0))
 
+    # keypress events
     key = pygame.key.get_pressed()
+
     if key[pygame.K_r]:
         randomize_data()
         frame = -1
         len_animate = 0
         animate = []
-    if key[pygame.K_s]:
-        animate = bubble_sort(heights)
+
+    if key[pygame.K_b]:
+        bubblesort.bubblesort(heights)
+        animate = []
+        for ani in bubblesort.bubblesort_animate:
+            animate.append(convert_to_data(ani))
+        len_animate = len(animate)
+        frame = 0
+
+    if key[pygame.K_i]:
+        insertionsort.insertionsort(heights)
+        animate = []
+        for ani in insertionsort.insertionsort_animate:
+            animate.append(convert_to_data(ani))
+        len_animate = len(animate)
+        frame = 0
+
+    if key[pygame.K_q]:
+        quicksort.quicksort(heights, 0, len(heights) - 1)
+        animate = []
+        for ani in quicksort.quicksort_animate:
+            animate.append(convert_to_data(ani))
+        len_animate = len(animate)
+        frame = 0
+
+    if key[pygame.K_m]:
+        mergesort.mergesort(heights, 0, len(heights) - 1)
+        animate = []
+        for ani in mergesort.mergesort_animate:
+            animate.append(convert_to_data(ani))
         len_animate = len(animate)
         frame = 0
     
+    # ui updates
     current_time = pygame.time.get_ticks()
     if current_time - last_update >= animation_cooldown and frame < len_animate and len_animate != 0:
         frame += 1
